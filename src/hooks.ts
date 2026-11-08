@@ -70,6 +70,9 @@ function preToolUse(i: Input) {
 function subagentStop(i: Input) {
   if (i.agent_type !== HELPER || !i.agent_transcript_path || !i.agent_id) return null;
   const conversation = parseTranscript(i.agent_transcript_path);
+  // the final answer is often not flushed to the transcript yet; the hook input carries it
+  const last = typeof i.last_assistant_message === "string" ? i.last_assistant_message.trim() : "";
+  if (last && !conversation.some((t) => t.role === "assistant" && t.text === last)) conversation.push({ role: "assistant", text: last });
   const repo = conversation.find((t) => t.role === "user")?.text.match(/^\s*repo:\s*(\S+)/i)?.[1];
   if (!repo || !(repo in repos()) || !conversation.some((t) => t.role === "assistant")) return null;
   enqueue(i.agent_id, { repo, ts: Date.now(), conversation });
