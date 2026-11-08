@@ -1,0 +1,16 @@
+{
+  "name": "knowledge-gc",
+  "version": "0.2.0",
+  "description": "Claude Code plugin: per-repo helper subagents whose knowledge builds up across conversations.",
+  "type": "module",
+  "license": "MIT",
+  "engines": { "node": ">=24" },
+  "scripts": {
+    "test": "node --test \"src/**/*.test.ts\"",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "typescript": "^7.0.2"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "SessionStart": [
+      { "hooks": [{ "type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}/bin/kgc\" hook session-start" }] }
+    ],
+    "UserPromptSubmit": [
+      { "hooks": [{ "type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}/bin/kgc\" hook prompt" }] }
+    ],
+    "PreToolUse": [
+      { "matcher": "Read|Grep|Glob", "hooks": [{ "type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}/bin/kgc\" hook pre-tool-use" }] }
+    ],
+    "SubagentStop": [
+      { "matcher": "knowledge-gc:helper", "hooks": [{ "type": "command", "async": true, "command": "\"${CLAUDE_PLUGIN_ROOT}/bin/kgc\" hook subagent-stop" }] }
+    ]
+  }
+}
