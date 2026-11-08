@@ -38,6 +38,7 @@ Knowledge lives in `~/.knowledge-gc` (override `KGC_HOME`; keep it outside `~/.c
 | `KGC_HOME` | state dir, default `~/.knowledge-gc` |
 | `KGC_DISTILL_MODEL` | model for the distiller, default your Claude Code default |
 
+## Develop
 
 ```sh
 npm install && npm run typecheck && npm test && claude plugin validate .
