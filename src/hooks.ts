@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 import { enqueue, getSeen, home, knowledgeDir, logLines, readIndex, repos, setSeen, subscribedTo } from "./knowledge.ts";
 import { parseTranscript } from "./transcript.ts";
 
-export const HELPER = "knowledge-gc:helper";
+export const HELPER = "docent:helper";
 type Input = Record<string, any>;
 const ctx = (hookEventName: string, additionalContext: string) => ({ hookSpecificOutput: { hookEventName, additionalContext } });
 
@@ -27,7 +27,7 @@ function sessionStart(i: Input) {
   for (const n of subs) seen[n] = logLines(n).length;
   setSeen(i.session_id, seen);
   const list = names.map((n) => `- ${n}: path=${all[n]} knowledge=${knowledgeDir(n)}`).join("\n");
-  let out = `knowledge-gc repos (ask via the ${HELPER} subagent):\n${list}`;
+  let out = `docent repos (ask via the ${HELPER} subagent):\n${list}`;
   for (const n of subs) out += `\n\n## Knowledge index: ${n}\n${readIndex(n) || "(empty — nothing learned yet)"}`;
   return ctx("SessionStart", out);
 }
@@ -56,7 +56,7 @@ const real = (p: string): string => {
 };
 const under = (p: string, root: string) => p === root || p.startsWith(root + sep);
 
-/** Auto-approve the helper's reads of registered repos + $KGC_HOME. Anything else falls through to normal permissions. */
+/** Auto-approve the helper's reads of registered repos + $DOCENT_HOME. Anything else falls through to normal permissions. */
 function preToolUse(i: Input) {
   if (i.agent_type !== HELPER) return null;
   const raw = i.tool_input?.file_path ?? i.tool_input?.path;
@@ -64,7 +64,7 @@ function preToolUse(i: Input) {
   const p = real(raw.startsWith("~") ? join(homedir(), raw.slice(1)) : resolve(i.cwd ?? ".", raw));
   const roots = [home(), ...Object.values(repos())].map(real);
   if (!roots.some((r) => under(p, r))) return null;
-  return { hookSpecificOutput: { hookEventName: "PreToolUse", permissionDecision: "allow", permissionDecisionReason: "knowledge-gc helper read" } };
+  return { hookSpecificOutput: { hookEventName: "PreToolUse", permissionDecision: "allow", permissionDecisionReason: "docent helper read" } };
 }
 
 function subagentStop(i: Input) {

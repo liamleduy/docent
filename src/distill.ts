@@ -33,11 +33,11 @@ export async function distill(name: string): Promise<void> {
         "--allowedTools", "Read", "Grep", "Glob", `Edit(/${dir}/**)`, // leading "//" = absolute; Edit rules cover Write
         "--permission-mode", "dontAsk",
       ];
-      if (process.env.KGC_DISTILL_MODEL) args.push("--model", process.env.KGC_DISTILL_MODEL);
+      if (process.env.DOCENT_DISTILL_MODEL) args.push("--model", process.env.DOCENT_DISTILL_MODEL);
       try {
-        const { stdout } = await run(process.env.KGC_CLAUDE_BIN ?? "claude", args, {
+        const { stdout } = await run(process.env.DOCENT_CLAUDE_BIN ?? "claude", args, {
           cwd: dir,
-          env: { ...process.env, KGC_DISTILLING: "1" },
+          env: { ...process.env, DOCENT_DISTILLING: "1" },
           timeout: 10 * 60_000,
         });
         // exit 0 is not enough: a denied write still exits 0

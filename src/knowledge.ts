@@ -1,4 +1,4 @@
-// All durable state lives here ($KGC_HOME). One module = one place to swap the backend.
+// All durable state lives here ($DOCENT_HOME). One module = one place to swap the backend.
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
@@ -6,7 +6,7 @@ import { join } from "node:path";
 export type Turn = { role: "user" | "assistant"; text: string };
 export type Queued = { repo: string; ts: number; conversation: Turn[] };
 
-export const home = () => process.env.KGC_HOME ?? join(homedir(), ".knowledge-gc");
+export const home = () => process.env.DOCENT_HOME ?? join(homedir(), ".docent");
 const NAME = /^[A-Za-z0-9][A-Za-z0-9._-]*$/;
 export const checkName = (n: string) => {
   if (!NAME.test(n)) throw new Error(`invalid name: ${n}`);

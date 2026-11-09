@@ -1,5 +1,5 @@
 {
-  "name": "knowledge-gc",
+  "name": "docent",
   "version": "0.2.0",
   "description": "Per-repo helper subagents whose knowledge builds up across conversations, shared across repos.",
   "license": "MIT"

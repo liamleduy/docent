@@ -8,8 +8,8 @@ import { handleHook, HELPER } from "./hooks.ts";
 import { acquire, addRepo, enqueue, knowledgeDir, queued, release, setSubscribed } from "./knowledge.ts";
 import { parseTranscript } from "./transcript.ts";
 
-const tmp = () => mkdtempSync(join(tmpdir(), "kgc-"));
-const fresh = () => (process.env.KGC_HOME = join(tmp(), "home"));
+const tmp = () => mkdtempSync(join(tmpdir(), "docent-"));
+const fresh = () => (process.env.DOCENT_HOME = join(tmp(), "home"));
 
 test("lock: exclusive, released, stale lock is stolen", () => {
   const h = fresh();
@@ -50,7 +50,7 @@ test("session-start injects index of subscribed repo; prompt shows only new log 
   assert.ok(existsSync(h));
 });
 
-test("pre-tool-use: allows only the helper, only inside registered repos / KGC_HOME", () => {
+test("pre-tool-use: allows only the helper, only inside registered repos / DOCENT_HOME", () => {
   const h = fresh();
   const repo = tmp();
   const outside = tmp();
@@ -88,7 +88,7 @@ test("transcript: keeps user/assistant text, drops tool blocks and junk", () => 
 test("subagent-stop queues the conversation for a registered repo only", () => {
   fresh();
   addRepo("api", tmp());
-  process.env.KGC_CLAUDE_BIN = "true"; // spawned detached distiller must be harmless
+  process.env.DOCENT_CLAUDE_BIN = "true"; // spawned detached distiller must be harmless
   const f = join(tmp(), "t.jsonl");
   const line = (role: string, text: string) => JSON.stringify({ type: role, message: { role, content: text } });
   writeFileSync(f, [line("user", "repo: api\nq"), line("assistant", "a")].join("\n"));
@@ -109,14 +109,14 @@ test("distill: drains queue on success, keeps it on failure, re-queued newer ts 
   const bin = join(tmp(), "fake-claude");
   writeFileSync(bin, "#!/bin/sh\nexit 1\n");
   chmodSync(bin, 0o755);
-  process.env.KGC_CLAUDE_BIN = bin;
+  process.env.DOCENT_CLAUDE_BIN = bin;
   await distill("api");
   assert.equal(queued("api").length, 1, "failure keeps queue");
   assert.ok(acquire("api"), "lock released after failure");
   release("api");
 
   // fake claude that "succeeds" and simulates a follow-up re-queueing while it ran
-  writeFileSync(bin, `#!/bin/sh\nprintf '%s' '${JSON.stringify(q(2))}' > "$KGC_HOME/queue/api/a1.json"\nexit 0\n`);
+  writeFileSync(bin, `#!/bin/sh\nprintf '%s' '${JSON.stringify(q(2))}' > "$DOCENT_HOME/queue/api/a1.json"\nexit 0\n`);
   await distill("api");
   assert.equal(queued("api").length, 0, "second pass consumed the newer conversation");
 });
@@ -128,7 +128,7 @@ test("distill: exit 0 with permission_denials keeps the queue and logs it", asyn
   const bin = join(tmp(), "fake-claude");
   writeFileSync(bin, `#!/bin/sh\necho '{"is_error":false,"permission_denials":[{"tool_name":"Write","tool_input":{"file_path":"/x"}}]}'\n`);
   chmodSync(bin, 0o755);
-  process.env.KGC_CLAUDE_BIN = bin;
+  process.env.DOCENT_CLAUDE_BIN = bin;
   await distill("api");
   assert.equal(queued("api").length, 1);
   assert.match(readFileSync(join(h, "distill.log"), "utf8"), /denied/);

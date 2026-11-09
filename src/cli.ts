@@ -7,13 +7,13 @@ import { addRepo, readIndex, readTopic, repos, setSubscribed } from "./knowledge
 
 const { positionals: [cmd, a, b] } = parseArgs({ allowPositionals: true });
 const need = (v: string | undefined, what: string) => {
-  if (!v) throw new Error(`usage: kgc ${cmd} <${what}>`);
+  if (!v) throw new Error(`usage: docent ${cmd} <${what}>`);
   return v;
 };
 
 try {
   if (cmd === "hook") {
-    if (process.env.KGC_DISTILLING) process.exit(0); // distiller's own session: never recurse
+    if (process.env.DOCENT_DISTILLING) process.exit(0); // distiller's own session: never recurse
     const input = JSON.parse(readFileSync(0, "utf8") || "{}");
     const out = handleHook(need(a, "event"), input);
     if (out) console.log(JSON.stringify(out));
@@ -26,7 +26,7 @@ try {
     for (const [n, p] of Object.entries(repos())) console.log(`${n}\t${p}\t${readIndex(n).split("\n").filter(Boolean).length} topics`);
   } else if (cmd === "subscribe" || cmd === "unsubscribe") {
     const name = need(a, "repo");
-    if (cmd === "subscribe" && !(name in repos())) throw new Error(`unknown repo ${name} (kgc add first)`);
+    if (cmd === "subscribe" && !(name in repos())) throw new Error(`unknown repo ${name} (docent add first)`);
     setSubscribed(gitRoot(process.cwd()), name, cmd === "subscribe");
     console.log(`${cmd}d ${gitRoot(process.cwd())} ${cmd === "subscribe" ? "to" : "from"} ${name}`);
   } else if (cmd === "knowledge") {
@@ -34,7 +34,7 @@ try {
   } else if (cmd === "distill") {
     await distill(need(a, "repo"));
   } else {
-    console.error("usage: kgc add|list|subscribe|unsubscribe|knowledge|distill|hook ...");
+    console.error("usage: docent add|list|subscribe|unsubscribe|knowledge|distill|hook ...");
     process.exit(1);
   }
 } catch (e) {
