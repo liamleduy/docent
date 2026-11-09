@@ -1,0 +1,17 @@
+{
+  "name": "docent",
+  "owner": {
+    "name": "liamleduy"
+  },
+  "plugins": [
+    {
+      "name": "docent",
+      "source": "./",
+      "description": "Per-repo helper subagents whose knowledge builds up across conversations, shared across repos.",
+      "author": {
+        "name": "liamleduy"
+      }
+    }
+  ],
+  "description": "Marketplace for docent, a Claude Code plugin with per-repo helper subagents."
+}
